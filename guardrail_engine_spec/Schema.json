@@ -1,0 +1,14 @@
+{
+    "approved": false,
+    "reason": "",
+    "rule_validation": {
+        "passed": false,
+        "failed_checks": []
+    },
+    "reasoning_validation": {
+        "passed": false,
+        "model_explanation": ""
+    },
+    "required_confirmation": false,
+    "safe_alternatives": []
+}

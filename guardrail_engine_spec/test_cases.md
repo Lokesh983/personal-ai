@@ -1,100 +1,317 @@
-# Use Case Tests — Personal AI Guardrail Engine
+# Use Case Tests — Personal AI Guardrail Engine (v2.0.0)
 
-This document defines the **canonical use case tests** for the Guardrail Engine
-specification v1.0.0.
+## Purpose
 
-These tests validate **contract correctness**, not implementation details.
+This document defines the **canonical, mandatory test cases** for the
+Personal AI Guardrail Engine (v2).
 
----
-
-## Purpose of These Tests
-
-The test cases exist to ensure that:
-
-- The canonical input schema is respected
-- The canonical output schema is enforced
-- Rule validation remains the sole approval authority
-- Reasoning validation never affects approval
-- Confirmation handling is orthogonal to rule validation
-- Deterministic behavior is preserved across runs
+These tests validate **behavioral correctness, determinism, and safety**
+across the expanded task capabilities introduced in v2.
 
 These tests are **normative**.
-
-Any implementation claiming compliance with this specification
-**must produce identical outputs** for the same inputs.
-
----
-
-## Covered Scenarios
-
-The following scenarios are explicitly covered and required:
-
-### 1. Clean Approval
-- All rules pass
-- Reasoning output is valid
-- Confirmation is not required
-- Approval is granted
-
-### 2. Hard Rejection (Rule Failure)
-- One or more rules fail
-- Approval is denied
-- Reasoning output does not override rejection
-- Confirmation is not applicable
-
-### 3. Reasoning Invalid, Approval Unaffected
-- All rules pass
-- LLM reasoning fails structural validation
-- Reasoning is replaced with deterministic placeholder
-- Approval remains granted
-
-### 4. Confirmation Required
-- All rules pass
-- Confirmation evaluator sets `required_confirmation = true`
-- Approval remains granted
-- Confirmation does not appear as a rule failure
-
-### 5. Multiple Rule Failures
-- More than one rule fails
-- All failed rule IDs are reported
-- Approval is denied
-- Reasoning output remains advisory only
+Any implementation claiming compliance with v2 **must** satisfy all cases
+without deviation.
 
 ---
 
-## Mandatory Constraints
+## Global Test Constraints (Non-Negotiable)
 
 All test cases must satisfy the following:
 
-- Inputs must match the canonical `raw_input_snapshot` schema
-- Outputs must match the canonical decision JSON schema
-- `approved` must depend **only** on rule validation
-- `reason` must be one of exactly two allowed values:
+- Input schema matches `raw_input_snapshot` exactly
+- Only supported `task_type` values are used
+- Rule validation is the **sole authority** for approval
+- Reasoning validation never affects approval
+- Confirmation never appears in `failed_checks`
+- Output schema is canonical and frozen
+- `reason` is one of exactly:
   - `"All checks passed."`
   - `"One or more rule checks failed."`
-- Reasoning failures must never block approval
-- Confirmation must never appear in `failed_checks`
-- No inferred intent or contextual assumptions are allowed
+- Same input must always produce the same output
 
 ---
 
-## Non-Goals of These Tests
+Test Case 1 — Clean Approval (General Task)
+Input (raw_input_snapshot)
+{
+  "task_id": "TC_V2_001",
+  "task_type": "TEXT_SUMMARIZATION",
+  "task_parameters": {
+    "source": "document"
+  },
+  "task_source_id": "agent",
+  "task_schema_version": "1.0.0"
+}
+Rule Validator Output
+{
+  "passed": true,
+  "failed_checks": []
+}
 
-These tests do **not**:
+Reasoning Validator Output
+{
+  "passed": true,
+  "model_explanation": "The task requests summarization of a provided document."
+}
 
-- Define rule logic
-- Define execution behavior
-- Define UI behavior
-- Optimize performance
-- Allow schema extensions
+Confirmation Evaluator Output
+{
+  "required_confirmation": false
+}
 
-They exist solely to enforce **behavioral correctness and determinism**.
+Final Decision JSON
+{
+  "approved": true,
+  "reason": "All checks passed.",
+  "rule_validation": {
+    "passed": true,
+    "failed_checks": []
+  },
+  "reasoning_validation": {
+    "passed": true,
+    "model_explanation": "The task requests summarization of a provided document."
+  },
+  "required_confirmation": false,
+  "safe_alternatives": []
+}
 
----
+Test Case 2 — Hard Rejection (Unsupported Task Type)
+Input (raw_input_snapshot)
+{
+  "task_id": "TC_V2_002",
+  "task_type": "UNKNOWN_ACTION",
+  "task_parameters": {},
+  "task_source_id": "agent",
+  "task_schema_version": "1.0.0"
+}
 
-## Compliance Statement
+Rule Validator Output
+{
+  "passed": false,
+  "failed_checks": ["R_INTEGRITY_001"]
+}
 
-An implementation is considered **compliant with Guardrail Engine v1.0.0**
-if and only if it passes all test scenarios described in this document
-without deviation.
+Reasoning Validator Output
+{
+  "passed": true,
+  "model_explanation": "The task specifies an unsupported action type."
+}
 
-Any deviation constitutes a **spec violation**.
+Confirmation Evaluator Output
+{
+  "required_confirmation": false
+}
+
+Final Decision JSON
+{
+  "approved": false,
+  "reason": "One or more rule checks failed.",
+  "rule_validation": {
+    "passed": false,
+    "failed_checks": ["R_INTEGRITY_001"]
+  },
+  "reasoning_validation": {
+    "passed": true,
+    "model_explanation": "The task specifies an unsupported action type."
+  },
+  "required_confirmation": false,
+  "safe_alternatives": []
+}
+
+Test Case 3 — Reasoning Invalid, Approval Unaffected
+Input (raw_input_snapshot)
+{
+  "task_id": "TC_V2_003",
+  "task_type": "FILE_READ",
+  "task_parameters": {
+    "path": "/user/docs/report.txt"
+  },
+  "task_source_id": "agent",
+  "task_schema_version": "1.0.0"
+}
+
+Rule Validator Output
+{
+  "passed": true,
+  "failed_checks": []
+}
+
+Reasoning Validator Output
+{
+  "passed": false,
+  "model_explanation": "Reasoning output discarded for non-compliance."
+}
+
+Confirmation Evaluator Output
+{
+  "required_confirmation": false
+}
+
+Final Decision JSON
+{
+  "approved": true,
+  "reason": "All checks passed.",
+  "rule_validation": {
+    "passed": true,
+    "failed_checks": []
+  },
+  "reasoning_validation": {
+    "passed": false,
+    "model_explanation": "Reasoning output discarded for non-compliance."
+  },
+  "required_confirmation": false,
+  "safe_alternatives": []
+}
+
+Test Case 4 — Confirmation Required (Filesystem Operation)
+Input (raw_input_snapshot)
+{
+  "task_id": "TC_V2_004",
+  "task_type": "FILE_DELETE",
+  "task_parameters": {
+    "path": "/user/docs/archive/"
+  },
+  "task_source_id": "agent",
+  "task_schema_version": "1.0.0"
+}
+
+Rule Validator Output
+{
+  "passed": true,
+  "failed_checks": []
+}
+
+Reasoning Validator Output
+{
+  "passed": true,
+  "model_explanation": "The task requests deletion of a specified filesystem path."
+}
+
+Confirmation Evaluator Output
+{
+  "required_confirmation": true
+}
+
+Final Decision JSON
+{
+  "approved": true,
+  "reason": "All checks passed.",
+  "rule_validation": {
+    "passed": true,
+    "failed_checks": []
+  },
+  "reasoning_validation": {
+    "passed": true,
+    "model_explanation": "The task requests deletion of a specified filesystem path."
+  },
+  "required_confirmation": true,
+  "safe_alternatives": []
+}
+
+Test Case 5 — Hard Rejection (System Command)
+Input (raw_input_snapshot)
+{
+  "task_id": "TC_V2_005",
+  "task_type": "SYSTEM_COMMAND",
+  "task_parameters": {
+    "command": "shutdown -h now"
+  },
+  "task_source_id": "agent",
+  "task_schema_version": "1.0.0"
+}
+
+Rule Validator Output
+{
+  "passed": false,
+  "failed_checks": ["R_SYS_COMMANDS_002"]
+}
+
+Reasoning Validator Output
+{
+  "passed": true,
+  "model_explanation": "The task specifies execution of a system-level command."
+}
+
+Confirmation Evaluator Output
+{
+  "required_confirmation": false
+}
+
+Final Decision JSON
+{
+  "approved": false,
+  "reason": "One or more rule checks failed.",
+  "rule_validation": {
+    "passed": false,
+    "failed_checks": ["R_SYS_COMMANDS_002"]
+  },
+  "reasoning_validation": {
+    "passed": true,
+    "model_explanation": "The task specifies execution of a system-level command."
+  },
+  "required_confirmation": false,
+  "safe_alternatives": []
+}
+
+Test Case 6 — Internet Access with Confirmation
+Input (raw_input_snapshot)
+{
+  "task_id": "TC_V2_006",
+  "task_type": "WEB_SCRAPE",
+  "task_parameters": {
+    "url": "https://example.com/data"
+  },
+  "task_source_id": "agent",
+  "task_schema_version": "1.0.0"
+}
+
+Rule Validator Output
+{
+  "passed": true,
+  "failed_checks": []
+}
+
+Reasoning Validator Output
+{
+  "passed": true,
+  "model_explanation": "The task requests retrieval of data from a specified web resource."
+}
+
+Confirmation Evaluator Output
+{
+  "required_confirmation": true
+}
+
+Final Decision JSON
+{
+  "approved": true,
+  "reason": "All checks passed.",
+  "rule_validation": {
+    "passed": true,
+    "failed_checks": []
+  },
+  "reasoning_validation": {
+    "passed": true,
+    "model_explanation": "The task requests retrieval of data from a specified web resource."
+  },
+  "required_confirmation": true,
+  "safe_alternatives": []
+}
+Compliance Statement
+
+An implementation is compliant with Personal AI Guardrail Engine v2.0.0
+if and only if all test cases in this document:
+
+Produce the exact approval outcome
+
+Produce the exact canonical JSON structure
+
+Preserve determinism
+
+Enforce confirmation correctly
+
+Never allow unsupported task types
+
+Never allow reasoning to influence approval
+
+Any deviation constitutes a spec violation.

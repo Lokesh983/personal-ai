@@ -1,36 +1,135 @@
-# Personal AI Guardrail Engine — Specification v1.0.0
+# Personal AI Guardrail Engine — Specification v2.0.0
 
-This repository contains the **formal specification** for a deterministic Guardrail Engine
-used to validate AI-generated tasks before execution.
+## Overview
 
-## Purpose
-The Guardrail Engine acts as a **mandatory approval layer** between task generation
-(LLM or deterministic) and task execution.
+The **Personal AI Guardrail Engine (v2)** is a deterministic, rule-first validation system
+that evaluates **AI-generated tasks** before they are allowed to reach any execution layer.
 
-It ensures:
-- Deterministic validation
-- Explicit rule-based enforcement
-- Zero execution authority
-- Full auditability
-- No intent inference
-- No hallucination-based decisions
+This engine acts as a **mandatory approval authority** between:
+- AI agents that generate tasks, and
+- downstream systems that may execute those tasks.
 
-## What This System Is
-- A validation and approval specification
-- A rule-first, reasoning-second architecture
-- A non-executing, non-agentic safety layer
+The engine itself **never executes anything**.
 
-## What This System Is NOT
-- An executor
-- An agent
-- A planner
-- A policy model
-- A learning system
+---
+
+## Why This Project Exists
+
+Modern AI systems increasingly generate **actions**, not just text.
+These actions may involve:
+
+- Filesystem operations
+- System commands
+- Application automation
+- Internet access
+- API calls
+- Downloads
+- Bulk operations
+
+LLMs are **probabilistic** and **hallucination-prone**.
+Allowing them to directly authorize actions introduces unacceptable risk.
+
+This project exists to ensure that:
+
+- AI models **cannot approve their own outputs**
+- All decisions are **deterministic and reproducible**
+- Safety is enforced through **explicit rules**, not inference
+- Execution systems are **never responsible for safety decisions**
+
+---
+
+## Core Philosophy
+
+The Guardrail Engine is built on the following principles:
+
+- **Rule-first, reasoning-second**
+- **Zero inference**
+- **Zero hallucinated authority**
+- **Determinism over intelligence**
+- **Validation ≠ execution**
+
+The engine is intentionally **boring**.
+Predictability and auditability are higher priorities than flexibility.
+
+---
+
+## What the Engine DOES
+
+The Guardrail Engine WILL:
+
+- Validate AI-generated tasks
+- Approve or reject tasks using deterministic rules
+- Enforce confirmation for sensitive actions
+- Produce exactly one canonical decision JSON
+- Generate advisory (non-authoritative) LLM reasoning
+- Log decisions immutably for audit and replay
+
+---
+
+## What the Engine DOES NOT Do
+
+The Guardrail Engine WILL NOT:
+
+- Execute tasks
+- Modify files or system state
+- Access the filesystem or network
+- Interpret user intent
+- Infer risk or semantic meaning
+- Use randomness or temperature > 0
+- Learn, adapt, or evolve rules
+- Allow models to self-validate correctness
+
+Any system performing these actions is **outside the scope** of this engine.
+
+---
+
+## Supported Task Types (v2)
+
+The engine may validate **only** the following task types.
+
+### General
+- `TEXT_SUMMARIZATION`
+- `BULK_OPERATION`
+
+### Filesystem
+- `FILE_READ`
+- `FILE_WRITE`
+- `FILE_DELETE`
+- `FOLDER_CREATE`
+
+### System
+- `SYSTEM_COMMAND`
+- `RUN_TOOL`
+- `APPLICATION_OPEN`
+
+### Internet
+- `INTERNET_SEARCH`
+- `WEB_SCRAPE`
+- `API_REQUEST`
+
+### Download
+- `DOWNLOAD_FILE`
+
+Any task type **not in this list must be rejected**.
+
+---
 
 ## Output Contract
-The engine produces **one and only one** canonical JSON decision output.
-All downstream systems must obey it blindly.
 
-## Version
-This specification is frozen as **v1.0.0**.
-Any changes require a formal versioning phase.
+The engine always produces the **same canonical JSON structure**:
+
+```json
+{
+  "approved": false,
+  "reason": "",
+  "rule_validation": {
+    "passed": false,
+    "failed_checks": []
+  },
+  "reasoning_validation": {
+    "passed": false,
+    "model_explanation": ""
+  },
+  "required_confirmation": false,
+  "safe_alternatives": []
+}

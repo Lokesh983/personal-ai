@@ -1,0 +1,16 @@
+# constants/task_types.py
+
+ALLOWED_TASK_TYPES = {
+    "FILE_READ",
+    "FILE_WRITE",
+    "FILE_DELETE",
+    "FOLDER_CREATE",
+    "SYSTEM_COMMAND",
+    "APPLICATION_OPEN",
+    "INTERNET_SEARCH",
+    "WEB_SCRAPE",
+    "API_REQUEST",
+    "DOWNLOAD_FILE",
+    "TEXT_SUMMARIZATION",
+    "BULK_OPERATION"
+}

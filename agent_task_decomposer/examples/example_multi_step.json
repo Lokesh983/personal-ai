@@ -1,0 +1,25 @@
+{
+    "input": {
+        "goal_id": "ex2",
+        "user_goal": "write hello world to file /tmp/a.txt",
+        "context": {
+            "available_tools": [],
+            "workspace_paths": [],
+            "constraints": []
+        }
+    },
+    "output": {
+        "plan_id": "plan::ex2::write hello world to file /tmp/a.txt",
+        "tasks": [
+            {
+                "task_id": "plan::ex2::write hello world to file /tmp/a.txt::task::0",
+                "task_type": "WRITE_FILE",
+                "task_parameters": {
+                    "path": "/tmp/a.txt",
+                    "content": "hello world"
+                },
+                "depends_on": []
+            }
+        ]
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "input": {
+        "goal_id": "ex1",
+        "user_goal": "create file /tmp/a.txt",
+        "context": {
+            "available_tools": [],
+            "workspace_paths": [],
+            "constraints": []
+        }
+    },
+    "output": {
+        "plan_id": "plan::ex1::create file /tmp/a.txt",
+        "tasks": [
+            {
+                "task_id": "plan::ex1::create file /tmp/a.txt::task::0",
+                "task_type": "CREATE_FILE",
+                "task_parameters": {
+                    "path": "/tmp/a.txt"
+                },
+                "depends_on": []
+            }
+        ]
+    }
+}

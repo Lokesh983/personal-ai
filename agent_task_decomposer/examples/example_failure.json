@@ -1,0 +1,15 @@
+{
+    "input": {
+        "goal_id": "ex3",
+        "user_goal": "delete all files in tmp",
+        "context": {
+            "available_tools": [],
+            "workspace_paths": [],
+            "constraints": []
+        }
+    },
+    "output": {
+        "plan_id": "plan::ex3::delete all files in tmp",
+        "tasks": []
+    }
+}

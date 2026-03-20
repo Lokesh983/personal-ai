@@ -1,9 +1,11 @@
 from typing import TypedDict, List, Literal, Dict, Any
-
+from agent_task_decomposer.decomposer.decomposer import decompose
+from agent_task_decomposer.decomposer.models import DecompositionInput, TaskPlan
 
 # =========================
 # Schema Definitions
 # =========================
+
 
 class BrainInput(TypedDict):
     user_input: str
@@ -145,3 +147,50 @@ def personal_ai_brain(input_data: BrainInput) -> BrainOutput:
         "summary": "All tasks executed successfully",
         "actions": executed_actions
     }
+
+
+def run_brain(input_data: dict) -> BrainOutput:
+    if "user_input" not in input_data:
+        return {
+            "status": "failed",
+            "summary": "Missing user_input",
+            "actions": []
+        }
+
+    return personal_ai_brain({
+        "user_input": input_data["user_input"]
+    })
+
+
+class PersonalAIBrain:
+    def __init__(self):
+        self.decomposer = _TaskDecomposerAdapter()
+
+    def process_request(self, user_input: str):
+        decomposition_input = DecompositionInput(
+            goal_id="cli-request",
+            user_goal=user_input,
+            context={},
+        )
+        task_plan = self.decomposer.decompose(decomposition_input)
+        return self._serialize_task_plan(task_plan)
+
+    @staticmethod
+    def _serialize_task_plan(task_plan: TaskPlan) -> Dict[str, Any]:
+        return {
+            "plan_id": task_plan.plan_id,
+            "tasks": [
+                {
+                    "task_id": task.task_id,
+                    "task_type": getattr(task.task_type, "value", str(task.task_type)),
+                    "task_parameters": task.task_parameters,
+                    "depends_on": task.depends_on,
+                }
+                for task in task_plan.tasks
+            ],
+        }
+
+
+class _TaskDecomposerAdapter:
+    def decompose(self, input_data: DecompositionInput) -> TaskPlan:
+        return decompose(input_data)

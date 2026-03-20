@@ -1,14 +1,14 @@
 import re
 from urllib.parse import urlparse
 
-from allowlists.system_commands import SAFE_SYSTEM_COMMANDS
-from allowlists.applications import ALLOWED_APPLICATIONS
-from allowlists.network import (
+from ..allowlists.system_commands import SAFE_SYSTEM_COMMANDS
+from ..allowlists.applications import ALLOWED_APPLICATIONS
+from ..allowlists.network import (
     ALLOWED_PROTOCOLS,
     BLOCKED_PORTS,
     MAX_REQUEST_TIMEOUT_MS
 )
-from constants.paths import WORKSPACE_ROOT
+from ..constants.paths import WORKSPACE_ROOT
 
 
 class AllowlistError(Exception):

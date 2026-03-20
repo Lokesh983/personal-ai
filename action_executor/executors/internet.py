@@ -1,7 +1,7 @@
 import requests
 
-from core.allowlist_enforcer import enforce_network_policy
-from constants.limits import MAX_RESPONSE_SIZE_KB
+from ..core.allowlist_enforcer import enforce_network_policy
+from ..constants.limits import MAX_RESPONSE_SIZE_KB
 
 
 class InternetError(Exception):

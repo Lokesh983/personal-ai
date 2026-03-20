@@ -1,8 +1,8 @@
-from core.validator import validate_input, ValidationError
-from core.dispatcher import dispatch, DispatchError
-from core.confirmation import is_valid_confirmation
-from core.output import assemble_output
-from audit_logging.audit_log import append_log_entry, LoggingError
+from .core.validator import validate_input, ValidationError
+from .core.dispatcher import dispatch, DispatchError
+from .core.confirmation import is_valid_confirmation
+from .core.output import assemble_output
+from .audit_logging.audit_log import append_log_entry, LoggingError
 
 
 def handle_request(payload: dict, user_confirmation: str = None):

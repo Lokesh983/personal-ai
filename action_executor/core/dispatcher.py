@@ -1,9 +1,9 @@
-from core.confirmation import confirmation_required
-from executors.filesystem import filesystem_executor
-from executors.system import system_executor
-from executors.internet import internet_executor
-from executors.download import download_executor
-from executors.general import general_executor
+from .confirmation import confirmation_required
+from ..executors.filesystem import filesystem_executor
+from ..executors.system import system_executor
+from ..executors.internet import internet_executor
+from ..executors.download import download_executor
+from ..executors.general import general_executor
 
 
 class DispatchError(Exception):

@@ -1,4 +1,4 @@
-from constants.task_types import ALLOWED_TASK_TYPES
+from ..constants.task_types import ALLOWED_TASK_TYPES
 
 
 class ValidationError(Exception):

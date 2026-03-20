@@ -1,7 +1,6 @@
-WORKSPACE_ROOT = "/personal_ai_workspace/"
+WORKSPACE_ROOT = "C:/Users/Lokesh/Desktop/test/"
 
 ALLOWED_PATHS = [
-    "/personal_ai_workspace/notes/",
-    "/personal_ai_workspace/downloads/",
-    "/personal_ai_workspace/logs/"
+    "C:/Users/Lokesh/Desktop/test/",
+    "C:/Users/Lokesh/Desktop/Gen AI/Projects/personal-ai/runtime/logs/"
 ]

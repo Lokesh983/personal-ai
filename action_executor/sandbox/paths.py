@@ -2,7 +2,7 @@
 
 import os
 
-from constants.paths import WORKSPACE_ROOT, ALLOWED_PATHS
+from ..constants.paths import WORKSPACE_ROOT, ALLOWED_PATHS
 
 
 class PathError(Exception):

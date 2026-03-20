@@ -2,8 +2,8 @@
 
 import os
 
-from sandbox.paths import normalize_and_validate_path, PathError
-from constants.limits import MAX_FILE_SIZE_MB
+from ..sandbox.paths import normalize_and_validate_path, PathError
+from ..constants.limits import MAX_FILE_SIZE_MB
 
 
 class FilesystemError(Exception):

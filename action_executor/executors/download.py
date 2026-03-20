@@ -1,8 +1,8 @@
 import requests
 
-from sandbox.paths import normalize_and_validate_path
-from constants.limits import MAX_FILE_SIZE_MB
-from core.allowlist_enforcer import enforce_network_policy
+from ..sandbox.paths import normalize_and_validate_path
+from ..constants.limits import MAX_FILE_SIZE_MB
+from ..core.allowlist_enforcer import enforce_network_policy
 
 
 class DownloadError(Exception):

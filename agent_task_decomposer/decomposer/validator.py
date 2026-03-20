@@ -1,13 +1,13 @@
 from typing import Any
 
-from decomposer.task_types import TaskType
-from decomposer.atomicity_rules import (
+from .task_types import TaskType
+from .atomicity_rules import (
     ATOMICITY_INVARIANTS,
     NON_ATOMIC_VERBS,
     FORBIDDEN_TASK_TYPES,
     FORBIDDEN_PARAMETER_KEYS,
 )
-from decomposer.models import AtomicTask
+from .models import AtomicTask
 
 
 def validate_atomic_task(task: AtomicTask) -> bool:

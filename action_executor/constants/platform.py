@@ -1,1 +1,1 @@
-EXECUTION_PLATFORM = "linux"
+EXECUTION_PLATFORM = "windows"

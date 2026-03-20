@@ -3,7 +3,7 @@
 import json
 import os
 
-from constants.paths import ALLOWED_PATHS
+from ..constants.paths import ALLOWED_PATHS
 
 
 class LoggingError(Exception):

@@ -1,7 +1,7 @@
 import subprocess
 
-from core.allowlist_enforcer import enforce_system_command, enforce_application_open
-from constants.platform import EXECUTION_PLATFORM
+from ..core.allowlist_enforcer import enforce_system_command, enforce_application_open
+from ..constants.platform import EXECUTION_PLATFORM
 
 
 class SystemError(Exception):

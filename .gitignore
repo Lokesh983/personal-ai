@@ -11,6 +11,9 @@ build/
 dist/
 *.spec
 
+# Executables
+*.exe
+
 # OS files
 .DS_Store
 Thumbs.db
